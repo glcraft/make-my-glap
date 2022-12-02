@@ -63,7 +63,8 @@ int main(int argc, char** argv) {
         return generate_header(std::move(config), std::move(output));
     }
     auto yaml_path = std::string{command.get_argument<"yaml">().value.value()};
-    auto yaml_config = YAML::LoadFile(yaml_path);
+    auto config = parse_yaml(yaml_path);
+
     auto type = command.get_argument<"type">().value.value_or("header");
     auto output_path = command.get_argument<"output">().value.value_or("output.h");
     return 0;
