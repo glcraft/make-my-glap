@@ -14,6 +14,10 @@ auto emit_error(std::string_view msg, auto... args) {
     exit(1);
 }
 
+auto generate_header(YAML::Node config, fmt::ostream output) {
+    output.print("#pragma once");
+    return 0;
+}
 
 auto parse_yaml(std::string_view path) -> YAML::Node {
     auto yaml_path = std::string{path};
@@ -71,7 +75,7 @@ int main(int argc, char** argv) {
     }
 
     if (type == "header") {
-        generate_header(std::move(config), std::move(output));
+        return generate_header(std::move(config), std::move(output));
     }
 
     return 0;
