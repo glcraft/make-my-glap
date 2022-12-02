@@ -14,10 +14,6 @@ auto emit_error(std::string_view msg, auto... args) {
     exit(1);
 }
 
-auto generate_header(YAML::Node config, fmt::ostream output) {
-    output.print("#pragma once");
-    return 0;
-}
 
 auto parse_yaml(std::string_view path) -> YAML::Node {
     auto yaml_path = std::string{path};
@@ -66,7 +62,18 @@ int main(int argc, char** argv) {
     auto config = parse_yaml(yaml_path);
 
     auto type = command.get_argument<"type">().value.value_or("header");
-    auto output_path = command.get_argument<"output">().value.value_or("output.h");
+    auto output_path = std::string{command.get_argument<"output">().value.value_or("output.h")};
+    auto output = fmt::output_file(output_path.c_str());
+    
+    if (errno != 0) {
+        auto error_msg = std::strerror(errno);
+        emit_error("failed to write in file '{}': {}", output_path, error_msg);
+    }
+
+    if (type == "header") {
+        generate_header(std::move(config), std::move(output));
+    }
+
     return 0;
     // do something with program
 }
