@@ -3,31 +3,14 @@
 #include <yaml-cpp/yaml.h>
 #include <span>
 #include <iostream>
+#include <fstream>
 #include <ranges>
 #include <fmt/format.h>
-#include <fmt/os.h>
 
-auto emit_error(std::string_view msg, auto... args) {
-    fmt::print(stderr, "error: ", fmt::format(fmt::runtime(msg), args...));
-    exit(1);
-}
+#include <generators.h>
+#include <utils.h>
+#include <yaml.h>
 
-auto generate_header(YAML::Node config, fmt::ostream output) {
-    output.print("#pragma once");
-    return 0;
-}
-
-auto parse_yaml(std::string_view path) -> YAML::Node {
-    auto yaml_path = std::string{path};
-    try {
-        return YAML::LoadFile(yaml_path);
-    } catch (YAML::BadFile &e) {
-        emit_error("failed to open file '{}'", yaml_path);
-    } catch (YAML::ParserException &e) {
-        emit_error("failed to parse file '{}'\n{}", yaml_path, e.what());
-    }
-    return {};
-}
 
 int main(int argc, char** argv) {
     std::vector<std::string_view> args{argv, argv+argc};
@@ -42,15 +25,14 @@ int main(int argc, char** argv) {
         emit_error("yaml path is not set");
     }
     auto yaml_path = std::string{command.get_argument<"yaml">().value.value()};
-    auto config = parse_yaml(yaml_path);
+    auto config = load_yaml(yaml_path);
 
     auto type = command.get_argument<"type">().value.value_or("header");
     auto output_path = std::string{command.get_argument<"output">().value.value_or("output.h")};
-    auto output = fmt::output_file(output_path.c_str());
+    auto output = std::ofstream(output_path.c_str());
     
-    if (errno != 0) {
-        auto error_msg = std::strerror(errno);
-        emit_error("failed to write in file '{}': {}", output_path, error_msg);
+    if (!output) {
+        emit_error("Failed to open file for writing '{}'", output_path);
     }
 
     if (type == "header") {
@@ -73,5 +55,4 @@ int main(int argc, char** argv) {
     }
 
     return 0;
-    // do something with program
 }
