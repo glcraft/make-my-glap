@@ -1,4 +1,3 @@
-#include "glap/parser.h"
 #include <glap_def.h>
 #include <string_view>
 #include <yaml-cpp/yaml.h>
