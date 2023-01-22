@@ -1,7 +1,6 @@
 #include "glap/parser.h"
 #include <glap_def.h>
 #include <string_view>
-#include <sys/errno.h>
 #include <yaml-cpp/yaml.h>
 #include <span>
 #include <iostream>
