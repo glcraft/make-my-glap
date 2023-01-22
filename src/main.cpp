@@ -30,11 +30,7 @@ auto parse_yaml(std::string_view path) -> YAML::Node {
 }
 
 int main(int argc, char** argv) {
-    // store arguments in a vector of string_view
-    std::vector<std::string_view> args;
-    for (int i = 0; i < argc; ++i) {
-        args.emplace_back(argv[i]);
-    }
+    std::vector<std::string_view> args{argv, argv+argc};
     auto args_result = glap::parser<args::program_t>(args);
     if (!args_result) {
         std::cerr << args_result.error().to_string() << std::endl;
