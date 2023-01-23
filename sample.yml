@@ -22,7 +22,7 @@ program:
                     max_number: 3 # default: glap::discard
                     validator: '[](std::string_view value) -> bool { return value.len() % 2; }' # default: glap::discard
                     resolver: '&mynamespace::to_int' # default: glap::discard
-            inputs:
+            input:
                 max_number: 3 # default: glap::discard
                 validator: '[](std::string_view value) -> bool { return value.len() % 2; }' # default: glap::discard
                 resolver: '&mynamespace::to_int' # default: glap::discard
