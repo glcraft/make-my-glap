@@ -13,12 +13,10 @@ auto header_input(std::string_view command_name, const YAML::Node& input, std::o
     if (auto maxvalue_config = input["max_number"]; maxvalue_config.IsDefined()) {
         auto maxvalue = maxvalue_config.IsNull() ? "glap::discard" : maxvalue_config.as<std::string>();
         output 
-            << fmt::format("using {} = glap::model::Inputs<{}, {}, {}>;", input_typename, maxvalue, resolver, validator)
-            << "\n";
+            << fmt::format("using {} = glap::model::Inputs<{}, {}, {}>;\n", input_typename, maxvalue, resolver, validator);
     } else {
         output 
-            << fmt::format("using {} = glap::model::Input<{}, {}>;", input_typename, resolver, validator)
-            << "\n";
+            << fmt::format("using {} = glap::model::Input<{}, {}>\n", input_typename, resolver, validator);
     }
     return input_typename;
 }
@@ -33,12 +31,10 @@ auto header_parameter(std::string_view command_name, YAML::detail::iterator_valu
     if (auto maxvalue_config = argument.second["max_number"]; maxvalue_config.IsDefined()) {
         auto maxvalue = maxvalue_config.IsNull() ? "glap::discard" : maxvalue_config.as<std::string>();
         output 
-            << fmt::format("using {} = glap::model::Parameters<{}, {}, {}, {}>;", argument_typename, names->glapnames, maxvalue, resolver, validator)
-            << "\n";
+            << fmt::format("using {} = glap::model::Parameters<{}, {}, {}, {}>;\n", argument_typename, names->glapnames, maxvalue, resolver, validator);
     } else {
         output 
-            << fmt::format("using {} = glap::model::Parameter<{}, {}, {}>;", argument_typename, names->glapnames, resolver, validator)
-            << "\n";
+            << fmt::format("using {} = glap::model::Parameter<{}, {}, {}>;\n", argument_typename, names->glapnames, resolver, validator);
     }
     return argument_typename;
 }
@@ -49,8 +45,7 @@ auto header_flag(std::string_view command_name, YAML::detail::iterator_value arg
     }
     auto argument_typename = fmt::format("flag_{}_{}_t", command_name, names->name);
     output << 
-        fmt::format("using {} = glap::model::Flag<{}>;", argument_typename, names->glapnames)
-        << "\n";
+        fmt::format("using {} = glap::model::Flag<{}>;\n", argument_typename, names->glapnames);
     return argument_typename;
 }
 auto header_argument(std::string_view command_name, YAML::detail::iterator_value argument, std::ofstream& output) -> Result<std::string> {
@@ -90,7 +85,6 @@ auto header_arguments(std::string_view command_name, const YAML::Node& config, s
         }
         result.push_back(std::move(argument_result.value()));
     }
-    output << "\n";
     return result;
 }
 auto header_command(YAML::detail::iterator_value command, std::ofstream& output) -> Result<std::string> {
@@ -114,9 +108,8 @@ auto header_command(YAML::detail::iterator_value command, std::ofstream& output)
     }
     auto arguments_str = join_strings(arguments, ", ");
     if (!arguments.empty()) {
-        output << 
-            fmt::format("using {} = glap::model::Command<{}, {}>;", command_typename, names->glapnames, arguments_str)
-            << "\n";
+        output 
+            << fmt::format("using {} = glap::model::Command<{}, {}>;\n", command_typename, names->glapnames, arguments_str);
     } else {
         output << 
             fmt::format("using {} = glap::model::Command<{}>;", command_typename, names->glapnames)
