@@ -109,6 +109,7 @@ auto header_command(YAML::detail::iterator_value command, std::ofstream& output)
     auto arguments_str = join_strings(arguments, ", ");
     if (!arguments.empty()) {
         output 
+            << fmt::format("// Command '{}'\n", names->name)
             << fmt::format("using {} = glap::model::Command<{}, {}>;\n", command_typename, names->glapnames, arguments_str);
     } else {
         output << 
