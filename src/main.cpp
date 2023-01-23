@@ -21,13 +21,13 @@ int main(int argc, char** argv) {
     }
     auto program = args_result.value();
     auto &command = std::get<args::command_generate_t>(program.command);
-    if (!command.get_argument<"yaml">().value) {
-        emit_error("yaml path is not set");
+    if (!command.get_argument<"input">().value) {
+        emit_error("input path is not set");
     }
-    auto yaml_path = std::string{command.get_argument<"yaml">().value.value()};
+    auto yaml_path = std::string{command.get_argument<"input">().value.value()};
     auto config = load_yaml(yaml_path);
 
-    auto type = command.get_argument<"type">().value.value_or("header");
+    auto type = command.get_argument<"output-type">().value.value_or("header");
     auto output_path = std::string{command.get_argument<"output">().value.value_or("output.h")};
     auto output = std::ofstream(output_path.c_str());
     
