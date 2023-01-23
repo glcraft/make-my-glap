@@ -67,12 +67,12 @@ auto join_strings(const Cont& strings, std::string_view separator) -> std::strin
     result.erase(result.size() - separator.size());
     return result;
 }
-auto header_parameter(YAML::detail::iterator_value argument, std::ofstream& output) -> Result<std::string> {
+auto header_parameter(std::string_view command_name, YAML::detail::iterator_value argument, std::ofstream& output) -> Result<std::string> {
     auto names = get_names(argument.first, argument.second);
     if (!names) {
         return tl::make_unexpected(std::move(names.error()));
     }
-    auto argument_typename = fmt::format("parameter_{}_t", names->name);
+    auto argument_typename = fmt::format("parameter_{}_{}_t", command_name, names->name);
     auto resolver = yaml_value_or_else<std::string>(argument.second["resolver"], [] { return std::string{"glap::discard"}; });
     auto validator = yaml_value_or_else<std::string>(argument.second["validator"], [] { return std::string{"glap::discard"}; });
     if (auto maxvalue_config = argument.second["max_number"]; maxvalue_config.IsDefined()) {
@@ -87,18 +87,18 @@ auto header_parameter(YAML::detail::iterator_value argument, std::ofstream& outp
     }
     return argument_typename;
 }
-auto header_flag(YAML::detail::iterator_value argument, std::ofstream& output) -> Result<std::string> {
+auto header_flag(std::string_view command_name, YAML::detail::iterator_value argument, std::ofstream& output) -> Result<std::string> {
     auto names = get_names(argument.first, argument.second);
     if (!names) {
         return tl::make_unexpected(std::move(names.error()));
     }
-    auto argument_typename = fmt::format("flag_{}_t", names->name);
+    auto argument_typename = fmt::format("flag_{}_{}_t", command_name, names->name);
     output << 
         fmt::format("using {} = glap::model::Flag<{}>;", argument_typename, names->glapnames)
         << "\n";
     return argument_typename;
 }
-auto header_argument(YAML::detail::iterator_value argument, std::ofstream& output) -> Result<std::string> {
+auto header_argument(std::string_view command_name, YAML::detail::iterator_value argument, std::ofstream& output) -> Result<std::string> {
     auto name = argument.first.as<std::string>();
     auto argument_config = argument.second;
     auto type = argument_config["type"];
@@ -106,9 +106,9 @@ auto header_argument(YAML::detail::iterator_value argument, std::ofstream& outpu
         if (!type.IsDefined()) {
             return tl::make_unexpected(fmt::format("'{}' : Missing type [flag or parameter]", name));
         } else if (type.as<std::string>() == "flag") {
-            return header_flag(std::move(argument), output);
+            return header_flag(command_name, std::move(argument), output);
         } else if (type.as<std::string>() == "parameter") {
-            return header_parameter(std::move(argument), output);
+            return header_parameter(command_name, std::move(argument), output);
         } else {
             return tl::make_unexpected(fmt::format("'{}' : Unknown type '{}'", name, type.as<std::string>()));
         }
@@ -129,7 +129,7 @@ auto header_arguments(std::string_view command_name, const YAML::Node& config, s
     output << fmt::format("// Arguments for '{}'\n", command_name);
     auto result = std::vector<std::string>{};
     for (auto argument : arguments) {
-        auto argument_result = header_argument(argument, output);
+        auto argument_result = header_argument(command_name, argument, output);
         if (!argument_result) {
             return tl::make_unexpected(std::move(argument_result.error()));
         }
