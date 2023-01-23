@@ -67,6 +67,22 @@ auto join_strings(const Cont& strings, std::string_view separator) -> std::strin
     result.erase(result.size() - separator.size());
     return result;
 }
+auto header_input(std::string_view command_name, const YAML::Node& input, std::ofstream& output) -> Result<std::string> {
+    auto input_typename = fmt::format("input_{}_t", command_name);
+    auto resolver = yaml_value_or_else<std::string>(input["resolver"], [] { return std::string{"glap::discard"}; });
+    auto validator = yaml_value_or_else<std::string>(input["validator"], [] { return std::string{"glap::discard"}; });
+    if (auto maxvalue_config = input["max_number"]; maxvalue_config.IsDefined()) {
+        auto maxvalue = maxvalue_config.IsNull() ? "glap::discard" : maxvalue_config.as<std::string>();
+        output 
+            << fmt::format("using {} = glap::model::Inputs<{}, {}, {}>;", input_typename, maxvalue, resolver, validator)
+            << "\n";
+    } else {
+        output 
+            << fmt::format("using {} = glap::model::Input<{}, {}>;", input_typename, resolver, validator)
+            << "\n";
+    }
+    return input_typename;
+}
 auto header_parameter(std::string_view command_name, YAML::detail::iterator_value argument, std::ofstream& output) -> Result<std::string> {
     auto names = get_names(argument.first, argument.second);
     if (!names) {
@@ -150,6 +166,13 @@ auto header_command(YAML::detail::iterator_value command, std::ofstream& output)
         return tl::make_unexpected(std::move(arguments_result.error()));
     }
     auto arguments = std::move(arguments_result.value());
+    if (auto input = command.second["input"]; input.IsDefined() && !input.IsNull()) {
+        auto input_typename = header_input(names->name, input, output);
+        if (!input_typename) {
+            return tl::make_unexpected(std::move(input_typename.error()));
+        }
+        arguments.push_back(std::move(input_typename.value()));
+    }
     auto arguments_str = join_strings(arguments, ", ");
     if (!arguments.empty()) {
         output << 
@@ -210,8 +233,3 @@ auto generate_header(YAML::Node config, std::ofstream output) -> Result<int> {
 #endif
     return header_program(config["program"], output);
 }
-
-//using program_t = glap::model::Program<"myprogram", 
-//glap::model::DefaultCommand::FirstDefined, 
-//command1_t, 
-//command2_t>;
