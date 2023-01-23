@@ -1,14 +1,10 @@
-#include <glap/core/utf8.h>
-#include <utils.h>
-#include <tl/expected.hpp>
 #include <string_view>
-#include <yaml-cpp/yaml.h>
 #include <string>
-
-struct Names {
-    std::string name;
-    std::string glapnames;
-};
+#include <glap/core/utf8.h>
+#include <tl/expected.hpp>
+#include <yaml-cpp/yaml.h>
+#include <utils.h>
+#include "header_common.h"
 
 auto check_name(std::string_view name) -> Result<int> {
     if (name.empty()) {
