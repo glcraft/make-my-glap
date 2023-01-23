@@ -19,7 +19,7 @@ auto header_program(const YAML::Node& config, std::ofstream& output) -> Result {
         << "\n\n";
     return 0;
 }
-auto generate_header(YAML::Node config, std::ofstream output) -> Result {
+auto generate_header(YAML::Node config, std::ofstream output) -> Result<int> {
     output << "#pragma once\n\n";
 
     header_program(config["program"], output);

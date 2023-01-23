@@ -2,7 +2,8 @@
 #include <fmt/core.h>
 #include <tl/expected.hpp>
 
-using Result = tl::expected<int, std::string_view>;
+template <typename T>
+using Result = tl::expected<T, std::string>;
 
 inline auto emit_error(std::string_view msg, auto... args) {
     fmt::print(stderr, "error: ", fmt::format(fmt::runtime(msg), args...));

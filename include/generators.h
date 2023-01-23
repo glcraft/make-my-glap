@@ -5,4 +5,4 @@
 #include <tl/expected.hpp>
 #include <utils.h>
 
-auto generate_header(YAML::Node config, std::ofstream output) -> Result;
+auto generate_header(YAML::Node config, std::ofstream output) -> Result<int>;
