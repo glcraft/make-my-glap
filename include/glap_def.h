@@ -13,9 +13,9 @@ namespace args
         return path == "header";
     };
 
-    using param_yaml_t = glap::model::Parameter<glap::Names<"yaml", 'c'>, glap::discard, path_exists>;
+    using param_yaml_t = glap::model::Parameter<glap::Names<"input", 'i'>, glap::discard, path_exists>;
 
-    using param_type_t = glap::model::Parameter<glap::Names<"type", 't'>, glap::discard, is_type>;
+    using param_type_t = glap::model::Parameter<glap::Names<"output-type", 't'>, glap::discard, is_type>;
 
     using param_output_t = glap::model::Parameter<glap::Names<"output", 'o'>>;
 
