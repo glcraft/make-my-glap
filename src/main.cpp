@@ -32,7 +32,7 @@ int main(int argc, char** argv) {
     auto output = std::ofstream(output_path.c_str());
     
     if (!output) {
-        emit_error("Failed to open file for writing '{}'", output_path);
+        emit_error(fmt::format("Failed to open file for writing '{}'", output_path));
     }
 
     if (type == "header") {

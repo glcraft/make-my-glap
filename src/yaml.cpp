@@ -6,9 +6,9 @@ auto load_yaml(std::string_view path) -> YAML::Node {
     try {
         return YAML::LoadFile(yaml_path);
     } catch (YAML::BadFile &e) {
-        emit_error("failed to open file '{}'", yaml_path);
+        emit_error(fmt::format("failed to open file '{}'", yaml_path));
     } catch (YAML::ParserException &e) {
-        emit_error("failed to parse file '{}'\n{}", yaml_path, e.what());
+        emit_error(fmt::format("failed to parse file '{}'\n{}", yaml_path, e.what()));
     }
     return {};
 }
