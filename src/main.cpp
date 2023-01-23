@@ -34,6 +34,16 @@ int main(int argc, char** argv) {
     if (!output) {
         emit_error(fmt::format("Failed to open file for writing '{}'", output_path));
     }
+    auto result = [&]() -> Result<int> {
+        if (type == "header") {
+            return generate_header(std::move(config), std::move(output));
+        }
+        return tl::make_unexpected(fmt::format("Unknown type '{}'", type));
+    }();
+    
+    if (!result) {
+        emit_error(result.error());
+    }
     
     return 0;
 }
