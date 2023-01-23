@@ -34,25 +34,6 @@ int main(int argc, char** argv) {
     if (!output) {
         emit_error(fmt::format("Failed to open file for writing '{}'", output_path));
     }
-
-    if (type == "header") {
-        return generate_header(std::move(config), std::move(output));
-    }
-    auto yaml_path = std::string{command.get_argument<"yaml">().value.value()};
-    auto config = parse_yaml(yaml_path);
-
-    auto type = command.get_argument<"type">().value.value_or("header");
-    auto output_path = std::string{command.get_argument<"output">().value.value_or("output.h")};
-    auto output = fmt::output_file(output_path.c_str());
     
-    if (errno != 0) {
-        auto error_msg = std::strerror(errno);
-        emit_error("failed to write in file '{}': {}", output_path, error_msg);
-    }
-
-    if (type == "header") {
-        return generate_header(std::move(config), std::move(output));
-    }
-
     return 0;
 }
