@@ -4,6 +4,8 @@ program:
     long_description: long description of the program
     description: quick description of the program
     default_command: true
+    includes:
+        - '<string>'
     commands:
         command_name:
             shortname: c # optional, internal codepoint verification
