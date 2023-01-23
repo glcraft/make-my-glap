@@ -75,9 +75,16 @@ auto header_parameter(YAML::detail::iterator_value argument, std::ofstream& outp
     auto argument_typename = fmt::format("parameter_{}_t", names->name);
     auto resolver = yaml_value_or_else<std::string>(argument.second["resolver"], [] { return std::string{"glap::discard"}; });
     auto validator = yaml_value_or_else<std::string>(argument.second["validator"], [] { return std::string{"glap::discard"}; });
-    output << 
-        fmt::format("using {} = glap::model::Parameter<{}, {}, {}>;", argument_typename, names->glapnames, resolver, validator)
-        << "\n";
+    if (auto maxvalue_config = argument.second["max_number"]; maxvalue_config.IsDefined()) {
+        auto maxvalue = maxvalue_config.IsNull() ? "glap::discard" : maxvalue_config.as<std::string>();
+        output 
+            << fmt::format("using {} = glap::model::Parameters<{}, {}, {}, {}>;", argument_typename, names->glapnames, maxvalue, resolver, validator)
+            << "\n";
+    } else {
+        output 
+            << fmt::format("using {} = glap::model::Parameter<{}, {}, {}>;", argument_typename, names->glapnames, resolver, validator)
+            << "\n";
+    }
     return argument_typename;
 }
 auto header_flag(YAML::detail::iterator_value argument, std::ofstream& output) -> Result<std::string> {
