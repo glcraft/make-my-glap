@@ -46,3 +46,52 @@ auto get_names(YAML::Node name, YAML::Node config) -> Result<Names> {
     auto glapnames = fmt::format("glap::Names<\"{}\", {}>", name_str, std::move(shortname.value()));
     return Names{std::move(name_str), std::move(glapnames)};
 }
+
+// count the number of white characters in a string
+auto count_white(std::string_view name) -> size_t {
+    size_t count = 0;
+    for (auto c : name) {
+        if (std::isspace(c))
+            ++count;
+    }
+    return count;
+}
+// replace every white character with its escaped version
+auto normalize_string(std::string_view text) -> std::string {
+    std::string result;
+    auto count = count_white(text);
+    if (count == 0)
+        return std::string{text};
+    result.reserve(text.size()+count);
+    auto previous = text.begin();
+    for (auto it = text.begin(); it != text.end(); ++it) {
+        auto c = *it;
+        if (c != ' ' && std::isspace(c)) {
+            if (previous != it)
+                result.append(previous, it);
+            switch (c) {
+                case '\n':
+                    result.append("\\n");
+                    break;
+                case '\t':
+                    result.append("\\t");
+                    break;
+                case '\r':
+                    result.append("\\r");
+                    break;
+                case '\v':
+                    result.append("\\v");
+                    break;
+                case '\f':
+                    result.append("\\f");
+                    break;
+                default:
+                    result.push_back(c);
+            }
+            previous = std::next(it);
+        }
+    }
+    if (previous != text.end())
+        result.append(previous, text.end());
+    return result;
+}
