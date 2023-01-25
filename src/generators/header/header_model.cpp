@@ -106,16 +106,14 @@ auto header_command(YAML::detail::iterator_value command, std::ofstream& output)
         }
         arguments.push_back(std::move(input_typename.value()));
     }
-    auto arguments_str = join_strings(arguments, ", ");
+    auto arguments_str = std::string{};
     if (!arguments.empty()) {
-        output 
-            << fmt::format("// Command '{}'\n", names->name)
-            << fmt::format("using {} = glap::model::Command<{}, {}>;\n", command_typename, names->glapnames, arguments_str);
-    } else {
-        output << 
-            fmt::format("using {} = glap::model::Command<{}>;", command_typename, names->glapnames)
-            << "\n";
+        arguments_str = fmt::format(", {}", join_strings(arguments, ", "));
     }
+    output 
+        << fmt::format("// Command '{}'\n", names->name)
+        << fmt::format("using {} = glap::model::Command<{}{}>;\n", command_typename, names->glapnames, arguments_str);
+    
     return command_typename;
 }
 auto header_commands(const YAML::Node& config, std::ofstream& output) -> Result<std::vector<std::string>> {
@@ -145,15 +143,11 @@ auto header_program(const YAML::Node& config, std::ofstream& output) -> Result<i
         return tl::make_unexpected(std::move(commands_result.error()));
     }
     auto commands = std::move(commands_result.value());
-    auto commands_str = join_strings(commands, ", ");
-    if (! commands_str.empty()) {
-        output 
-            << fmt::format("using program_t = glap::model::Program<\"{}\", {}, {}>;", name.as<std::string>(), default_command, commands_str) 
-            << "\n\n";
-    } else {
-        output 
-            << fmt::format("using program_t = glap::model::Program<\"{}\", {}>;", name.as<std::string>(), default_command)
-            << "\n\n";
-    }
+    auto commands_str = std::string{};
+    if (!commands.empty()) 
+        commands_str = fmt::format(", {}", join_strings(commands, ", "));
+    output 
+        << fmt::format("using program_t = glap::model::Program<\"{}\", {}{}>;", name.as<std::string>(), default_command, commands_str)
+        << "\n\n";
     return 0;
 }
