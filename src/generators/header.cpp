@@ -10,6 +10,7 @@
 #include <utils.h>
 
 auto header_program(const YAML::Node& config, std::ofstream& output) -> Result<int>;
+auto header_help(const YAML::Node& config, std::ofstream& output) -> Result<int>;
 
 auto header_includes(const YAML::Node& program_config, std::ofstream& output) {
     if (auto includes = program_config["includes"]; includes.IsDefined() && !includes.IsNull() && includes.IsSequence()) {
@@ -39,8 +40,17 @@ auto generate_header(YAML::Node config, std::ofstream output) -> Result<int> {
     output << "import glap;\n\n";
 #else 
     output << "#include <glap/glap.h>\n";
+    output << "#include <glap/generators/help.h>\n";
 #endif
+    
     header_includes(program_config, output);
     header_modules(program_config, output);
+
+    if (auto result = header_program(program_config, output); !result) {
+        return tl::make_unexpected(result.error());
+    }
+    if (auto result = header_help(program_config, output); !result) {
+        return tl::make_unexpected(result.error());
+    }
     return 0;
 }
