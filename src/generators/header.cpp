@@ -11,6 +11,24 @@
 
 auto header_program(const YAML::Node& config, std::ofstream& output) -> Result<int>;
 
+auto header_includes(const YAML::Node& program_config, std::ofstream& output) {
+    if (auto includes = program_config["includes"]; includes.IsDefined() && !includes.IsNull() && includes.IsSequence()) {
+        for (auto include : includes) {
+            output << "#include " << include.as<std::string>() << '\n';
+        }
+    }
+    output << '\n';
+}
+
+auto header_modules(const YAML::Node& program_config, std::ofstream& output) {
+    if (auto modules = program_config["modules"]; modules.IsDefined() && !modules.IsNull() && modules.IsSequence()) {
+        for (auto module : modules) {
+            output << "import " << module.as<std::string>() << ";\n";
+        }
+    }
+    output << '\n';
+}
+
 auto generate_header(YAML::Node config, std::ofstream output) -> Result<int> {
     auto program_config = config["program"];
     if (!program_config.IsDefined() || program_config.IsNull()) {
@@ -22,11 +40,7 @@ auto generate_header(YAML::Node config, std::ofstream output) -> Result<int> {
 #else 
     output << "#include <glap/glap.h>\n";
 #endif
-    if (auto includes = program_config["includes"]; includes.IsDefined() && !includes.IsNull() && includes.IsSequence()) {
-        for (auto include : includes) {
-            output << "#include " << include.as<std::string>() << '\n';
-        }
-    }
-    output << '\n';
-    return header_program(program_config, output);
+    header_includes(program_config, output);
+    header_modules(program_config, output);
+    return 0;
 }
