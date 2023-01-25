@@ -1,7 +1,9 @@
 version: 1.0.0
 program:
     name: program_name
-    long_description: long description of the program
+    long_description: |
+        long description 
+        of the program
     description: quick description of the program
     default_command: true
     includes:
@@ -19,12 +21,12 @@ program:
                     long_description: long description of the flag
                 parameter_name:
                     type: parameter
-                    description: quick description of the flag
-                    long_description: long description of the flag
+                    description: quick description of the parameter
+                    long_description: long description of the parameter
                     max_number: 3 # default: glap::discard
-                    validator: '[](std::string_view value) -> bool { return value.len() % 2; }' # default: glap::discard
+                    validator: '[](std::string_view value) -> bool { return value.length() % 2; }' # default: glap::discard
                     # resolver: '&mynamespace::to_int' # default: glap::discard
             input:
                 max_number: 3 # default: glap::discard
-                validator: '[](std::string_view value) -> bool { return value.len() % 2; }' # default: glap::discard
+                validator: '[](std::string_view value) -> bool { return value.length() % 2; }' # default: glap::discard
                 # resolver: '&mynamespace::to_int' # default: glap::discard
