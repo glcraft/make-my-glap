@@ -10,7 +10,7 @@
 #include <utils.h>
 
 auto header_program(const YAML::Node& config, std::ofstream& output) -> Result<int>;
-auto header_help(const YAML::Node& config, std::ofstream& output) -> Result<int>;
+auto header_help(const YAML::Node& config, std::ofstream& output) -> Result<std::string>;
 
 auto header_includes(const YAML::Node& program_config, std::ofstream& output) {
     if (auto includes = program_config["includes"]; includes.IsDefined() && !includes.IsNull() && includes.IsSequence()) {
