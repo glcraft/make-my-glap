@@ -8,6 +8,7 @@ program:
     default_command: true
     includes:
         - '<string>'
+    namespace: args
     commands:
         command_name:
             shortname: c # optional, internal codepoint verification
