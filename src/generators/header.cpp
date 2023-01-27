@@ -42,15 +42,24 @@ auto generate_header(YAML::Node config, std::ofstream output) -> Result<int> {
     output << "#include <glap/glap.h>\n";
     output << "#include <glap/generators/help.h>\n";
 #endif
-    
+
     header_includes(program_config, output);
     header_modules(program_config, output);
+
+    auto ns = program_config["namespace"];
+    if (ns.IsDefined() && !ns.IsNull()) {
+        output << "namespace " << ns.as<std::string>() << " {\n";
+    }
 
     if (auto result = header_program(program_config, output); !result) {
         return tl::make_unexpected(result.error());
     }
     if (auto result = header_help(program_config, output); !result) {
         return tl::make_unexpected(result.error());
+    }
+    
+    if (ns.IsDefined() && !ns.IsNull()) {
+        output << "}\n";
     }
     return 0;
 }
