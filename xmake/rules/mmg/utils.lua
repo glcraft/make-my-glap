@@ -1,9 +1,21 @@
 function get_mmg()
     import("lib.detect.find_tool")
-    local mmg = find_tool("mmg")
-    if not mmg then
-        mmg = {program = "/home/gly/Projets/glap/build/linux/x86_64/release/mmg"}
-    end
+    import("core.project.project")
+
+    local paths = {"/usr/local/bin", "/usr/bin", "$(env PATH)", function () 
+        local mmg_package = project.required_package("mmg")
+        if mmg_package then
+            local mmg_package_bin = path.join(mmg_package:installdir(), "bin")
+            if os.isdir(mmg_package_bin) then
+                return mmg_package_bin
+            end
+        end
+    end}
+
+    local mmg = find_tool("mmg", {paths = paths})
+    -- if not mmg then
+    --     mmg = {program = "/home/gly/Projets/glap/build/linux/x86_64/release/mmg"}
+    -- end
     assert(mmg, "mmg tool not found!")
     return mmg.program
 end
