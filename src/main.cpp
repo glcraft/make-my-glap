@@ -21,6 +21,10 @@ int main(int argc, char** argv) {
     }
     auto program = args_result.value();
     auto &command = std::get<args::command_generate_t>(program.command);
+    if (command.get_argument<"version">().occurences > 0) {
+        std::cout << "make-my-glap version 1.0.0" << std::endl;
+        return 0;
+    }
     if (!command.get_argument<"input">().value) {
         emit_error("input path is not set");
     }
