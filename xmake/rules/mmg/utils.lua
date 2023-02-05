@@ -48,7 +48,8 @@ end
 function mmg_update_target(target)
     import("core.base.option")
     local mmg_program = get_mmg()
-    local mmg_sourcebatches = target:sourcebatches()["glap.mmg"]
+    local target_sourcebatches = target:sourcebatches()
+    local mmg_sourcebatches = target_sourcebatches["mmg"] or target_sourcebatches["@mmg/mmg"]
     if not mmg_sourcebatches then
         return
     end
